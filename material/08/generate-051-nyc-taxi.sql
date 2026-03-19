@@ -5,6 +5,8 @@
 -- NYC taxi source: https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page
 -- Central Park weather source: https://www.ncdc.noaa.gov/cdo-web/datasets/GHCND/stations/GHCND:USW00094728/detail
 
+.bail on
+
 DETACH DATABASE IF EXISTS taxi;
 
 .shell rm -f 051-nyc-taxi.db
@@ -83,21 +85,33 @@ INSERT INTO zones
          ON (z.LocationID = shp.OBJECTID);
 
 -- Load raw NYC taxi data for 2024
+-- (sleep between downloads in order to not overwhelm cloudfront.net)
 PREPARE nyc AS
   COPY rides
   FROM ('https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2024-' || $1 || '.parquet');
 
 EXECUTE nyc('01');
+.shell sleep 30
 EXECUTE nyc('02');
+.shell sleep 30
 EXECUTE nyc('03');
+.shell sleep 30
 EXECUTE nyc('04');
+.shell sleep 30
 EXECUTE nyc('05');
+.shell sleep 30
 EXECUTE nyc('06');
+.shell sleep 30
 EXECUTE nyc('07');
+.shell sleep 30
 EXECUTE nyc('08');
+.shell sleep 30
 EXECUTE nyc('09');
+.shell sleep 30
 EXECUTE nyc('10');
+.shell sleep 30
 EXECUTE nyc('11');
+.shell sleep 30
 EXECUTE nyc('12');
 
 -- Remove rows with bogus pickup/dropoff times
